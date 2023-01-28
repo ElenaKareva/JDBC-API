@@ -1,8 +1,13 @@
 package com.netology.jdbc_daolayer.repositories;
 
+import com.netology.jdbc_daolayer.person.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -17,15 +22,20 @@ import java.util.stream.Collectors;
 public class ProductRepository {
 
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
-    public ProductRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public ProductRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate, JdbcTemplate jdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
 
-    public List<String> getProductName(String name) {
+    public Person getProductName(String name) {
         String scriptFileName = read("select_product_name.sql");
-        return namedParameterJdbcTemplate.queryForList(scriptFileName, Map.of("name", name), String.class);
+
+        SqlParameterSource parameterSource = new MapSqlParameterSource("name", name);
+        return namedParameterJdbcTemplate.query(scriptFileName, parameterSource, new BeanPropertyRowMapper<>(Person.class))
+                .stream().findAny().orElse(null);
     }
 
     private static String read(String scriptFileName) {

@@ -1,24 +1,30 @@
 package com.netology.jdbc_daolayer.controllers;
 
 
-import com.netology.jdbc_daolayer.services.ProductService;
+import com.netology.jdbc_daolayer.person.Person;
+import com.netology.jdbc_daolayer.repositories.ProductRepository;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 @RestController
 public class ProductController {
 
-    private ProductService productService;
+    private ProductRepository productRepository;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
+    public ProductController(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     @GetMapping("/products/fetch-product")
-    public List<String> getProductName(@RequestParam (value = "name",required = false) String name) {
-        return productService.getProductName(name);
+    public Person getSqlSetup(@RequestParam String name) {
+        return productRepository.getProductName(name);
+    }
+
+    @PostMapping("/post")
+    public Person getSqlSetups(@RequestParam String name) {
+        return productRepository.getProductName(name);
     }
 }
